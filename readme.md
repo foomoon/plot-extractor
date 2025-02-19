@@ -16,7 +16,7 @@ This project extracts data points from plot images using OpenCV and Tesseract OC
 
    docker build -t plot-extractor .
 
-   docker run --rm -it plot-extractor
+   docker run --rm -it -p 5001:5001 plot-extractor
 
 ## Installed Python Packages (as of 2/18/25)
 | Package          | Version         |
