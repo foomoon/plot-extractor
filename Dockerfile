@@ -37,6 +37,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the src folder into the container
 COPY src/ /app/src/
 
+EXPOSE 5001
+
 # Set the entry point for the container
-# CMD ["python", "run_extraction.py"]
-CMD ["bash"]
+CMD ["python", "src/extractor-app.py"]
+# CMD ["bash"]
