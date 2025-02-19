@@ -116,6 +116,8 @@ def main(args):
     # Plot final data points and median line
     # filename = "extracted_rcs.png"
     filename = os.path.basename(image_path)
+    figure_path = os.path.join(output_folder, f"extracted-{filename}")
+
     data_points = extractor.data_points
     median = calculate_median_rcs(data_points)
 
@@ -137,7 +139,7 @@ def main(args):
 
       plot_median(median, data_points)
 
-      plt.savefig(os.path.join(output_folder, f"extracted-{filename}"), dpi=300)
+      plt.savefig(figure_path, dpi=300)
 
       plt.close()
       # print("\nData extraction and visualization complete!\n")
@@ -145,18 +147,22 @@ def main(args):
         print("\n!!!!! ERROR EXTRACTING DATA !!!!!\n")
 
         
+    
+
+    
+    name = os.path.splitext(filename)[0]
+    csv_path = os.path.join(csv_folder, name + ".csv")
+    save_to_csv(data_points, csv_path)
+
     result = {
         "origin": origin,
         "xlim": xlim,
         "ylim": ylim,
         "median_rcs": median,
         "data_points": data_points,
+        "csv_path": csv_path,
+        "figure_path": figure_path
     }
-
-    
-    name = os.path.splitext(filename)[0]
-    csv_path = os.path.join(csv_folder, name + ".csv")
-    save_to_csv(data_points, csv_path)
     
 
     if debug:

@@ -38,9 +38,7 @@ def generate_sample_figure(settings):
     ax.set_ylabel(y_label, color='black')
 
     # Set x-axis ticks and axis limits
-    ax.set_xticks(np.arange(0, 181, 20))
-    # ax.set_xlim(0, 180)
-    # ax.set_ylim(-30, 30)
+    # ax.set_xticks(np.arange(0, 181, 20))
     ax.set_xlim(x_min, x_max)
     ax.set_ylim(y_min, y_max)
 
