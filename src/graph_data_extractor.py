@@ -1,6 +1,8 @@
 import os
 import cv2
 import numpy as np
+import matplotlib
+matplotlib.use("Agg")  # Use a non-GUI backend
 import matplotlib.pyplot as plt
 from find_plot_corners import find_plot_corners
 from utils import filter_colors
