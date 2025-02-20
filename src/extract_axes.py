@@ -2,12 +2,14 @@ import re
 import cv2
 import pytesseract
 import statistics
+import matplotlib
+matplotlib.use("Agg")  # Use a non-GUI backend
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from PIL import Image
 import math
 
-def extract_axes_labels(img_input, lower_left, factor=0.004, DEBUG=False):
+def extract_axes_labels(img_input, lower_left, factor=0.004, DEBUG=False, debug_file_path="output/axes_extraction.png"):
 
     if len(img_input.shape) > 2:
         img = cv2.cvtColor(img_input, cv2.COLOR_RGB2GRAY)
@@ -49,7 +51,7 @@ def extract_axes_labels(img_input, lower_left, factor=0.004, DEBUG=False):
         y_roi_rect = patches.Rectangle((y_roi_left, 0), y_roi_right-y_roi_left, bottom, edgecolor='red', facecolor='none', linewidth=1)
         plt.gca().add_patch(x_roi_rect)
         plt.gca().add_patch(y_roi_rect)
-        plt.savefig("output/axes_extraction.png")
+        plt.savefig(debug_file_path)
         plt.close()
 
     def preprocess_for_ocr(cropped):

@@ -34,12 +34,15 @@ def main(image, args):
     title        = getattr(args, "title", "Title")
     x_label      = getattr(args, "x_label", "X Axis")
     y_label      = getattr(args, "y_label", "Y Axis")
+    axes_extract_factor = 0.004
 
     # Figure properties
     classification = getattr(args, 'classification', "SAMPLE")
     dpi            = getattr(args, "dpi", 300)
-    
 
+
+    if debug:
+        print("DEBUG MODE: ")
 
     # Initialize extractor and load image
     extractor = GraphDataExtractor()
@@ -65,7 +68,8 @@ def main(image, args):
     if xlim is None or ylim is None:
         print("No axes specified, attempting to extract from image")
         image = extractor.get_image()
-        x_axis, y_axis = extract_axes_labels(image, origin, DEBUG=args.debug, factor=0.004)
+        
+        x_axis, y_axis = extract_axes_labels(image, origin, DEBUG=args.debug, factor=axes_extract_factor, debug_file_path=os.path.join(output_folder, "axes_extraction.png"))
         
         if not x_axis:
             print("No x axis found, using default")
@@ -92,7 +96,14 @@ def main(image, args):
     extractor.set_limits(xlim, ylim)
     # Run the full data extraction process
     extractor.process()
-    # 
+
+    if debug:
+        extractor.plot_thresholded_image(os.path.join(output_folder, "extract-threshold.png"))
+        extractor.plot_cleaned_image(os.path.join(output_folder, "extract-cleaned.png"))
+        extractor.plot_contours(os.path.join(output_folder, "extract-contours.png"))
+
+
+    # Get data
     data_points = extractor.data_points
     median = calculate_median_rcs(data_points)
 

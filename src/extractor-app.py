@@ -41,6 +41,8 @@ def extract():
     x_label = request.form.get("x_label", "X Axis")
     y_label = request.form.get("y_label", "Y Axis")
 
+    debug = request.form.get("debug", False)
+
     # Check the checkbox: if it is unchecked, then get axis limits;
     # note: when a checkbox is checked its value is submitted.
     detect_axes = request.form.get('detect_axes')
@@ -67,7 +69,7 @@ def extract():
         "delta": delta,
         "kernel_size": kernel_size,
         "thin": thin,
-        "debug": False,
+        "debug": debug,
         "output_folder": "static/images",
         "classification": classification,
         'dpi': dpi,
