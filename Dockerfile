@@ -37,8 +37,11 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the src folder into the container
 COPY src/ /app/src/
 
+# Switch working directory to the src folder to begin application
+WORKDIR /app/src
+
 EXPOSE 5001
 
 # Set the entry point for the container
-CMD ["python", "src/extractor-app.py"]
+CMD ["python", "extractor-app.py"]
 # CMD ["bash"]
