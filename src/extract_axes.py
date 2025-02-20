@@ -136,10 +136,12 @@ def extract_axes_labels(img_input, lower_left, factor=0.004, DEBUG=False):
 
     # Check monotonicity and warn if needed.
     if not is_monotonic(x_axis_values):
-      print("Warning: x_axis_values are not monotonic. Attempting to sanitize.")
-    #   x_axis_values = sanitize_axis_values(x_axis_values)
+      print("Warning: extracted x_axis_values are not monotonic. ")
+      print(x_axis_values)
     if not is_monotonic(y_axis_values):
-      print("Warning: y_axis_values are not monotonic. Attempting to sanitize.")
+      print("Warning: extracted y_axis_values are not monotonic. ")
+      print(y_axis_values)
+
     #   y_axis_values = sanitize_axis_values(y_axis_values)
 
     return x_axis_values, y_axis_values

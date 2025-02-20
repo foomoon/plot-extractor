@@ -113,6 +113,7 @@ def main(image, args):
       figure_path = os.path.join(output_folder, "extracted-image.png")
       ax = generate_sample_figure(settings)
       ax.plot(data_points[:, 0], data_points[:, 1], linestyle='-', color='blue', linewidth=0.8)
+      print(f"Saving figure to {figure_path}")
       plt.savefig(figure_path, dpi=dpi)
       plt.close()
     else:
