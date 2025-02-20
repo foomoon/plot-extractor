@@ -6,89 +6,11 @@
     <title>Plot Extractor</title>
     <!-- Local Bootstrap CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/extractor.css') }}">
     <!-- Custom Styles for more compact layout -->
     <style>
       body {
         background: linear-gradient(135deg, #e3f2fd, #bbdefb);
-      }
-      .navbar {
-        background-color: #1976d2;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      }
-      .container {
-        max-width: 600px;
-      }
-      h1, h2, h3 {
-        font-weight: 700;
-        margin-bottom: 1rem;
-        color: #0d47a1;
-      }
-      h5 {
-        margin-top: 1rem;
-        margin-bottom: 0.5rem;
-      }
-      input[type="color"] {
-        height: 2.5em;
-      }
-      form {
-        background: #fff;
-        padding: 1rem 1.5rem;
-        border-radius: 0.5rem;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      }
-      .form-label {
-        margin-bottom: 0.25rem;
-        font-size: 0.9rem;
-      }
-      .form-control {
-        padding: 0.375rem 0.5rem;
-        font-size: 0.9rem;
-      }
-      .mb-3 {
-        margin-bottom: 0.75rem !important;
-      }
-      .d-grid > button {
-        padding: 0.5rem;
-        font-size: 0.95rem;
-      }
-      .btn-primary {
-        background-color: #0d47a1;
-        border-color: #0d47a1;
-      }
-      .btn-primary:hover {
-        background-color: #1565c0;
-        border-color: #1565c0;
-      }
-      /* Compact Styles for Result Container */
-      .result-container {
-        background: #fff;
-        padding: 1rem;
-        margin-top: 1rem;
-        border-radius: 0.5rem;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        display: none;
-      }
-      .result-container h2 {
-        color: #0d47a1;
-        margin-bottom: 0.5rem;
-        font-size: 1.1rem;
-      }
-      .result-container pre {
-        background: #f8f9fa;
-        padding: 0.5rem;
-        border-radius: 0.5rem;
-        overflow-x: auto;
-      }
-      .result-container pre.collapsed {
-        max-height: 150px;
-        overflow: hidden;
-      }
-      .extracted-image,
-      .preview-image {
-        max-width: 100%;
-        height: auto;
-        display: block;
-        margin: 0 auto 0.5rem;
       }
       #loading-overlay {
         background: rgba(0, 0, 0, 0.5); 
@@ -298,6 +220,7 @@
           };
         })
         .catch(error => {
+          loadingOverlay.style.visibility = 'hidden';
           resultContainer.style.display = 'block';
           resultFigure.src = "";
           resultPre.innerHTML = `<div class="alert alert-danger">An error occurred: ${error.message}</div>`;
