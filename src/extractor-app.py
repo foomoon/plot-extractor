@@ -8,12 +8,14 @@ from types import SimpleNamespace
 
 app = Flask(__name__)
 
-@app.route('/')
+# @app.route('/')
 @app.route('/')
 def index():
     return render_template("index.html")
 
-
+@app.route('/v2')
+def index2():
+    return render_template("v2.html")
 
 @app.route('/extract', methods=['POST'])
 def extract():

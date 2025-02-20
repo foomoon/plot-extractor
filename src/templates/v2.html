@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Plot Extractor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <style>
+      body {
+        background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+      }
+      input[type="color"] {
+        height: 2.4em;
+      }
+      .navbar {
+        background-color: #1976d2;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      }
+      /* Increase container width */
+      .custom-container {
+        max-width: 1000px;
+      }
+      .form-section {
+        background-color: #fff;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      }
+      #loading-overlay {
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1050;
+        visibility: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .result-container {
+        background: #fff;
+        padding: 1rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        display: none;
+      }
+      .result-container pre {
+        background: #f8f9fa;
+        padding: 0.5rem;
+        border-radius: 4px;
+        overflow-x: auto;
+        max-height: 200px;
+      }
+      .extracted-image,
+      .preview-image {
+        max-width: 100%;
+        height: auto;
+        display: block;
+        margin: 0 auto 0.5rem;
+      }
+      #extracted-image {
+        display: none;
+      }
+      .preview-background {
+        background-color: rgba(234, 232, 232, 0.5); 
+        border-radius: 8px; 
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="loading-overlay">
+      <div class="spinner-border text-light" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+    <nav class="navbar navbar-dark">
+      <div class="container custom-container">
+        <a class="navbar-brand" href="/">Plot Extractor</a>
+      </div>
+    </nav>
+    <div class="container custom-container mt-4">
+      <h2 class="text-center mb-4">Figure Extractor</h2>
+      <form id="upload-form" action="/extract" method="post" enctype="multipart/form-data">
+        <!-- File Input -->
+        <div class="row mb-3">
+          <div class="col-12">
+            <label for="file-input" class="form-label">Select image to extract data:</label>
+            <input type="file" class="form-control" name="file" id="file-input" accept="image/*" required>
+          </div>
+        </div>
+
+        <div class="row mt-4">
+          <!-- Input Image Preview -->
+          <div class="col-md-6">
+            <div class="p-3 mb-3 preview-background">
+              <h5>Input Image Preview</h5>
+              <div id="file-preview-container" style="display:none;">
+                <img id="file-preview" class="img-fluid rounded" alt="Selected Image Preview">
+              </div>
+            </div>
+          </div>
+          <!-- Result Image -->
+          <div class="col-md-6">
+            <div class="p-3 mb-3 preview-background">
+              <h5>Result Image</h5>
+              <img id="extracted-image" class="img-fluid rounded" src="{{ url_for('static', filename='') }}" alt="Extracted Image">
+            </div>
+          </div>
+        </div>
+
+        <!-- Two-column layout for Parameters -->
+        <div class="row">
+          <!-- Analysis Parameters Column -->
+          <div class="col-md-6">
+            <div class="form-section">
+              <h5>Analysis Parameters</h5>
+              <div class="row mb-3">
+                <div class="col-sm-6">
+                  <label for="target_color" class="form-label">Target Color</label>
+                  <input type="color" class="form-control" name="target_color" id="target_color" value="#034730" required>
+                </div>
+                <div class="col-sm-6">
+                  <label for="delta" class="form-label">Color Precision</label>
+                  <input type="number" class="form-control" name="delta" id="delta" value="20" min="0" max="255" required>
+                </div>
+              </div>
+              <div class="row mb-3">
+                <div class="col-sm-6">
+                  <label for="kernel_size" class="form-label">Kernel Size</label>
+                  <input type="number" class="form-control" name="kernel_size" id="kernel_size" value="1" min="1" max="10" required>
+                </div>
+                <div class="col-sm-6">
+                  <label for="thin" class="form-label">Thin Factor</label>
+                  <input type="number" class="form-control" name="thin" id="thin" value="3" min="1" max="10" required>
+                </div>
+              </div>
+              <div class="form-check mb-3">
+                <input class="form-check-input" type="checkbox" name="detect_axes" id="detect_axes" checked>
+                <label class="form-check-label" for="detect_axes">Detect Axes Automatically</label>
+              </div>
+              <div class="row" id="axis-limits-row" style="display:none;">
+                <div class="col-sm-6 mb-3">
+                  <label for="x_min" class="form-label">X (min)</label>
+                  <input type="number" class="form-control" name="x_min" id="x_min" placeholder="X min">
+                </div>
+                <div class="col-sm-6 mb-3">
+                  <label for="x_max" class="form-label">X (max)</label>
+                  <input type="number" class="form-control" name="x_max" id="x_max" placeholder="X max">
+                </div>
+                <div class="col-sm-6 mb-3">
+                  <label for="y_min" class="form-label">Y (min)</label>
+                  <input type="number" class="form-control" name="y_min" id="y_min" placeholder="Y min">
+                </div>
+                <div class="col-sm-6 mb-3">
+                  <label for="y_max" class="form-label">Y (max)</label>
+                  <input type="number" class="form-control" name="y_max" id="y_max" placeholder="Y max">
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Figure Presentation Parameters Column -->
+          <div class="col-md-6">
+            <div class="form-section">
+              <h5>Figure Presentation Parameters</h5>
+              <div class="mb-3">
+                <label for="title" class="form-label">Title</label>
+                <input type="text" class="form-control" name="title" id="title" placeholder="Enter plot title" value="Extracted Plot">
+              </div>
+              <div class="row mb-3">
+                <div class="col-sm-6">
+                  <label for="x_label" class="form-label">X Axis Label</label>
+                  <input type="text" class="form-control" name="x_label" id="x_label" placeholder="Enter X axis label" value="X Axis">
+                </div>
+                <div class="col-sm-6">
+                  <label for="y_label" class="form-label">Y Axis Label</label>
+                  <input type="text" class="form-control" name="y_label" id="y_label" placeholder="Enter Y axis label" value="Y Axis">
+                </div>
+              </div>
+              <div class="row mb-3">
+                <div class="col-sm-6">
+                  <label for="dpi" class="form-label">DPI</label>
+                  <input type="number" class="form-control" name="dpi" id="dpi" value="300" required>
+                </div>
+                <div class="col-sm-6">
+                  <label for="classification" class="form-label">Classification</label>
+                  <select class="form-control" name="classification" id="classification">
+                    <option value="SAMPLE" selected>SAMPLE</option>
+                    <option value="UNCLASSIFIED">UNCLASSIFIED</option>
+                    <option value="CUI">CUI</option>
+                    <option value="SECRET">SECRET</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="d-grid">
+          <button type="submit" class="btn btn-primary">Extract Data</button>
+        </div>
+      </form>
+      <div id="result-container" class="result-container mt-4">
+        <h3>Extraction Results:</h3>
+        <pre id="result-text" class="collapsed"></pre>
+        <button id="toggle-button" class="btn btn-secondary btn-sm" style="display:none;">Show More</button>
+      </div>
+    </div>
+    <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+    <script>
+      // File preview handling
+      const fileInput = document.getElementById('file-input');
+      fileInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        const previewContainer = document.getElementById('file-preview-container');
+        const previewImage = document.getElementById('file-preview');
+        if (file) {
+          const objectURL = URL.createObjectURL(file);
+          previewImage.src = objectURL;
+          previewContainer.style.display = 'block';
+        } else {
+          previewContainer.style.display = 'none';
+        }
+      });
+    
+      // Toggle axis limits row based on Detect Axes Automatically checkbox
+      document.getElementById('detect_axes').addEventListener('change', function(e) {
+        const axisLimitsRow = document.getElementById('axis-limits-row');
+        const requiredFields = ['x_min', 'x_max', 'y_min', 'y_max'];
+        if (!e.target.checked) {
+          axisLimitsRow.style.display = 'flex';
+          requiredFields.forEach(function(id) {
+            document.getElementById(id).setAttribute('required', 'required');
+          });
+        } else {
+          axisLimitsRow.style.display = 'none';
+          requiredFields.forEach(function(id) {
+            document.getElementById(id).removeAttribute('required');
+          });
+        }
+      });
+    
+      // Handle form submission
+      document.getElementById('upload-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const loadingOverlay = document.getElementById('loading-overlay');
+        const resultContainer = document.getElementById('result-container');
+        const resultPre = document.getElementById('result-text');
+        resultContainer.style.display = 'none';
+        loadingOverlay.style.visibility = 'visible';
+        const formData = new FormData(e.target);
+        const resultFigure = document.getElementById('extracted-image');
+
+        fetch(e.target.action, {
+          method: e.target.method,
+          body: formData
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error("Server returned " + response.status);
+          }
+          return response.json();
+        })
+        .then(data => {
+          loadingOverlay.style.visibility = 'hidden';
+          resultContainer.style.display = 'block';
+          if (data.error) {
+            resultPre.innerHTML = `<div class="alert alert-danger">${data.error}</div>`;
+          } else {
+            resultPre.textContent = JSON.stringify(data, null, 2);
+          }
+          resultPre.classList.add('collapsed');
+          const toggleButton = document.getElementById('toggle-button');
+          toggleButton.style.display = 'inline-block';
+          toggleButton.textContent = "Show More";
+          if (data.extracted_image) {
+            resultFigure.style.display = 'block'
+            resultFigure.src = data.extracted_image + '?' + new Date().getTime();
+          }
+          toggleButton.onclick = function() {
+            if (resultPre.classList.contains('collapsed')) {
+              resultPre.classList.remove('collapsed');
+              toggleButton.textContent = "Show Less";
+            } else {
+              resultPre.classList.add('collapsed');
+              toggleButton.textContent = "Show More";
+            }
+          };
+        })
+        .catch(error => {
+          loadingOverlay.style.visibility = 'hidden';
+          resultContainer.style.display = 'block';
+          resultFigure.src = "";
+          resultPre.innerHTML = `<div class="alert alert-danger">An error occurred: ${error.message}</div>`;
+          console.error('Error:', error);
+        });
+      });
+    </script>
+  </body>
+</html>
