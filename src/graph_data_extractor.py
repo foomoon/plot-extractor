@@ -214,8 +214,8 @@ class GraphDataExtractor:
 
         # print(f"Removed outliers. Kept: {len(self.data_points)} of {original_length}\n")
  
-    def find_corners(self, debug: bool = False):
-        origin, top_right = find_plot_corners(self.image, debug=debug)
+    def find_corners(self, debug: bool = False, output_folder="output"):
+        origin, top_right = find_plot_corners(self.image, debug=debug, output_folder=output_folder)
         return origin, top_right
     
     def crop(self, origin, top_right):

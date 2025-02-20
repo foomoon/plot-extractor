@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Processing Results</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+            background-color: #f4f4f9;
+        }
+        h1 {
+            color: #333;
+        }
+        .image-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .image-container img {
+            max-width: 100%;
+            height: auto;
+            max-height: 400px;
+            border: 2px solid #ddd;
+            padding: 10px;
+            background-color: #fff;
+        }
+        .image-container div {
+            width: 45%;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Image Processing Results</h1>
+    
+    <h2>Original Image</h2>
+    <div class="image-container">
+        <div>
+            <img src="example_plot.png" alt="Original Image">
+            <p>Original Image</p>
+        </div>
+    </div>
+
+    <h2>Processed Images</h2>
+    <div class="image-container">
+        <div>
+            <img src="threshold_output.png" alt="Thresholded Image">
+            <p>Thresholded Image</p>
+        </div>
+        <div>
+            <img src="subtracted_output.png" alt="Subtracted Image">
+            <p>Subtracted Image</p>
+        </div>
+        <div>
+            <img src="cleaned_output.png" alt="Cleaned Image">
+            <p>Cleaned Image</p>
+        </div>
+        <div>
+            <img src="example_contour.png" alt="Contours Image" style="padding-top:40px; padding-bottom:30px;">
+            <p>Contours Image</p>
+        </div>
+        <div>
+            <img src="example_output.png" alt="Extracted Data Points">
+            <p>Extracted Data Points</p>
+        </div>
+    </div>
+</body>
+</html>

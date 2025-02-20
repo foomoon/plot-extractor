@@ -62,7 +62,7 @@ def main(image, args):
         print(f"Reloaded image area = {extractor.get_image_area()}\n")
 
     # Get plot area origin first
-    origin, _ = extractor.find_corners(debug=debug)
+    origin, _ = extractor.find_corners(debug=debug, output_folder=output_folder)
 
     # Find plot corners (origin) and extract axes labels
     if xlim is None or ylim is None:

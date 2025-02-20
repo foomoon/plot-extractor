@@ -2,7 +2,7 @@ import os
 import cv2
 import numpy as np
 
-def find_plot_corners(image, debug=False):
+def find_plot_corners(image, debug=False, output_folder="output"):
     """
     Attempts to locate both the origin (bottom-left) and the top-right corner of a plot.
     
@@ -31,7 +31,7 @@ def find_plot_corners(image, debug=False):
     # Threshold the image to obtain a binary image (lines in white)
     _, binary = cv2.threshold(inv_gray, 50, 255, cv2.THRESH_BINARY)
     if debug:
-        cv2.imwrite(os.path.join("output", "binary.png"), binary)  # Save contour image
+        cv2.imwrite(os.path.join(output_folder, "binary.png"), binary)  # Save contour image
         
     # Use morphological operations to extract thick vertical lines.
     # The kernel size is based on the image dimensions; adjust as necessary.
@@ -42,7 +42,7 @@ def find_plot_corners(image, debug=False):
     extend_vert_kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (1, image.shape[0] // 5))
     vertical_lines = cv2.morphologyEx(vertical_lines, cv2.MORPH_CLOSE, extend_vert_kernel, iterations=2)
     if debug:
-        cv2.imwrite(os.path.join("output", "vertical_lines.png"), vertical_lines)  # Save contour image
+        cv2.imwrite(os.path.join(output_folder, "vertical_lines.png"), vertical_lines)  # Save contour image
 
     # Use morphological operations to extract thick horizontal lines.
     hor_kernel_len = max(3, image.shape[1] // 40)
@@ -52,7 +52,7 @@ def find_plot_corners(image, debug=False):
     extend_hor_kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (image.shape[1] // 5, 1))
     horizontal_lines = cv2.morphologyEx(horizontal_lines, cv2.MORPH_CLOSE, extend_hor_kernel, iterations=2)
     if debug:
-        cv2.imwrite(os.path.join("output", "horizontal_lines.png"), horizontal_lines)  # Save contour image
+        cv2.imwrite(os.path.join(output_folder, "horizontal_lines.png"), horizontal_lines)  # Save contour image
     
     # Find intersections between the vertical and horizontal thick lines.
     intersections = cv2.bitwise_and(vertical_lines, horizontal_lines)
@@ -65,7 +65,7 @@ def find_plot_corners(image, debug=False):
     intersections[:, -border_width:] = 0
     
     if debug:
-        cv2.imwrite(os.path.join("output", "intersections.png"), intersections)  # Save contour image
+        cv2.imwrite(os.path.join(output_folder, "intersections.png"), intersections)  # Save contour image
     
     # Find contours in the intersections mask to get candidate intersection points.
     contours, _ = cv2.findContours(intersections, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -77,7 +77,7 @@ def find_plot_corners(image, debug=False):
     if debug:
         contour_image = np.zeros_like(gray)  # Same size as the original image, filled with black (0)
         cv2.drawContours(contour_image, contours, -1, (255), 2)  # (-1) draws all contours
-        cv2.imwrite(os.path.join("output", "corner_contours.png"), contour_image)  # Save contour image
+        cv2.imwrite(os.path.join(output_folder, "corner_contours.png"), contour_image)  # Save contour image
 
     
     # Compute candidate points (use the center of each contour's bounding rectangle)
