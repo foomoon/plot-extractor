@@ -35,12 +35,15 @@ def main(image, args):
     title        = getattr(args, "title", "Title")
     x_label      = getattr(args, "x_label", "X Axis")
     y_label      = getattr(args, "y_label", "Y Axis")
+    isMedian     = getattr(args, "isMedian", False)
     axes_extract_factor = 0.004
 
     # Figure properties
     classification = getattr(args, 'classification', "SAMPLE")
     dpi            = getattr(args, "dpi", 300)
 
+    # Create output folder if it doesn't exist
+    os.makedirs(output_folder, exist_ok=True)
 
     if debug:
         print("DEBUG MODE: ")
@@ -112,30 +115,38 @@ def main(image, args):
 
     # Get data
     data_points = extractor.data_points
-    median = calculate_median_rcs(data_points)
+    median = None
 
     if data_points is not None and len(data_points):
-      # Define plot settings
-      settings = {
-          "title": title,
-          "x_label": x_label,
-          "y_label": y_label,
-          "type": classification,
-          "x_lim": xlim,
-          "y_lim": ylim
-      }
+        # Define plot settings
+        settings = {
+            "title": title,
+            "x_label": x_label,
+            "y_label": y_label,
+            "type": classification,
+            "x_lim": xlim,
+            "y_lim": ylim
+        }
 
-      # Generate the sample figure
-      # Create output folder if it doesn't exist
-      os.makedirs(output_folder, exist_ok=True)
-      figure_path = os.path.join(output_folder, "extracted-image.png")
-      ax = generate_sample_figure(settings)
-      ax.plot(data_points[:, 0], data_points[:, 1], linestyle='-', color='blue', linewidth=0.8)
-      print(f"Saving figure to {figure_path}")
-      plt.savefig(figure_path, dpi=dpi)
-      plt.close()
+        # Generate the sample figure
+        figure_path = os.path.join(output_folder, "extracted-image.png")
+        ax = generate_sample_figure(settings)
+        ax.plot(data_points[:, 0], data_points[:, 1], linestyle='-', color='blue', linewidth=0.8)
+        print(f"Saving figure to {figure_path}")
+
+        if isMedian:
+            median = calculate_median_rcs(data_points)
+            print(f"Plotting Median RCS: {median}")
+            plot_median(median, data_points)
+            
+
+        plt.savefig(figure_path, dpi=dpi)
+        plt.close()
+
+        
     else:
         print("\n!!!!! ERROR EXTRACTING DATA !!!!!\n")
+        
 
 
     result = {
