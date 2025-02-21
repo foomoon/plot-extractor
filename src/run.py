@@ -1,4 +1,5 @@
 import os
+import cv2
 import matplotlib
 matplotlib.use("Agg")  # Use a non-GUI backend
 import matplotlib.pyplot as plt
@@ -64,12 +65,14 @@ def main(image, args):
     # Get plot area origin first
     origin, _ = extractor.find_corners(debug=debug, output_folder=output_folder)
 
+    axes_file_path = os.path.join(output_folder, "axes-extraction.png")
+
     # Find plot corners (origin) and extract axes labels
     if xlim is None or ylim is None:
         print("No axes specified, attempting to extract from image")
         image = extractor.get_image()
         
-        x_axis, y_axis = extract_axes_labels(image, origin, DEBUG=args.debug, factor=axes_extract_factor, debug_file_path=os.path.join(output_folder, "axes_extraction.png"))
+        x_axis, y_axis = extract_axes_labels(image, origin, DEBUG=args.debug, factor=axes_extract_factor, debug_file_path=axes_file_path)
         
         if not x_axis:
             print("No x axis found, using default")
@@ -87,6 +90,10 @@ def main(image, args):
         if not validate_limits(ylim):
             print("Using default y limits")
             ylim = [-30, 30]
+    else:
+        # save a blank image
+        print(f"Manual Axes input... overwriting {axes_file_path}")
+        cv2.imwrite(axes_file_path, image)
 
     # Convert to grayscale after isolating target color
     extractor.filter_to_gray(target_color, delta=delta)

@@ -258,25 +258,27 @@ class GraphDataExtractor:
         self.find_contours()
         self.extract_data_points()
 
-    def plot_image(self, image, file_path):
+    def plot_image(self, image, title, file_path):
         """Plots the thresholded image."""
         plt.figure(figsize=(6, 6))
         plt.imshow(image, cmap='gray')
-        plt.title('Thresholded Image Before Morphology')
+        plt.title(title)
         plt.axis('off')
         plt.tight_layout()
         plt.savefig(file_path)
         plt.close()
 
-    def plot_thresholded_image(self, filename="output/threshold_output.png"):
+    def plot_thresholded_image(self, filename="output/threshold-output.png"):
         """Plots the thresholded image."""
-        self.plot_image(self.thresholded_image, filename)
+        title="Thresholded Image Before Morphology"
+        self.plot_image(self.thresholded_image, title, filename)
 
-    def plot_cleaned_image(self, filename="output/cleaned_output.png"):
+    def plot_cleaned_image(self, filename="output/cleaned-output.png"):
         """Plots the cleaned image."""
-        self.plot_image(self.cleaned_image, filename)
+        title="Cleaned Image After Morphology"
+        self.plot_image(self.cleaned_image, title, filename)
 
-    def plot_contours(self, file_path="output/contour_output.png"):
+    def plot_contours(self, file_path="output/contour-output.png"):
         """Draws contours on a blank image."""
         contours = self.contours
         contour_image = np.zeros_like(self.image)  # Same size as the original image, filled with black (0)

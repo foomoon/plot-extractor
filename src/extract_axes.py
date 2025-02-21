@@ -9,7 +9,7 @@ import matplotlib.patches as patches
 from PIL import Image
 import math
 
-def extract_axes_labels(img_input, lower_left, factor=0.004, DEBUG=False, debug_file_path="output/axes_extraction.png"):
+def extract_axes_labels(img_input, lower_left, factor=0.004, DEBUG=False, debug_file_path="output/axes-extraction.png"):
 
     if len(img_input.shape) > 2:
         img = cv2.cvtColor(img_input, cv2.COLOR_RGB2GRAY)
@@ -42,7 +42,9 @@ def extract_axes_labels(img_input, lower_left, factor=0.004, DEBUG=False, debug_
     x_axis_region = img[x_roi_top:x_roi_bottom, 0:right]
     y_axis_region = img[0:bottom, y_roi_left:y_roi_right]
 
-    if DEBUG:
+    useOpenCV = True
+
+    if DEBUG and not useOpenCV:
         plt.figure(figsize=(6, 6))
         plt.imshow(img, cmap='gray')
         circle = patches.Circle(lower_left, radius=5, edgecolor='red', facecolor='none', linewidth=2)
@@ -51,8 +53,26 @@ def extract_axes_labels(img_input, lower_left, factor=0.004, DEBUG=False, debug_
         y_roi_rect = patches.Rectangle((y_roi_left, 0), y_roi_right-y_roi_left, bottom, edgecolor='red', facecolor='none', linewidth=1)
         plt.gca().add_patch(x_roi_rect)
         plt.gca().add_patch(y_roi_rect)
+        plt.tight_layout()
         plt.savefig(debug_file_path)
         plt.close()
+
+    
+
+    if DEBUG and useOpenCV:
+        # If the image is grayscale (2D array), convert it to BGR so that color drawing works.
+        if len(img.shape) == 2:
+            img_color = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
+        else:
+            img_color = img.copy()
+        # Draw the circle:
+        cv2.circle(img_color, lower_left, 20, (0, 255, 0), thickness=3)
+        # Draw the x-axis region of interest (ROI) rectangle:
+        cv2.rectangle(img_color, (0, x_roi_top), (right, x_roi_bottom), (0, 0, 255), thickness=3)
+        # Draw the y-axis region of interest (ROI) rectangle:
+        cv2.rectangle(img_color, (y_roi_left, 0), (y_roi_right, bottom), (0, 0, 255), thickness=3)
+        # Save the final image
+        cv2.imwrite(debug_file_path, img_color)
 
     def preprocess_for_ocr(cropped):
         _, thresh = cv2.threshold(cropped, 150, 255, cv2.THRESH_BINARY)

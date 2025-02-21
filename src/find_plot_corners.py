@@ -42,7 +42,7 @@ def find_plot_corners(image, debug=False, output_folder="output"):
     extend_vert_kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (1, image.shape[0] // 5))
     vertical_lines = cv2.morphologyEx(vertical_lines, cv2.MORPH_CLOSE, extend_vert_kernel, iterations=2)
     if debug:
-        cv2.imwrite(os.path.join(output_folder, "vertical_lines.png"), vertical_lines)  # Save contour image
+        cv2.imwrite(os.path.join(output_folder, "vertical-lines.png"), vertical_lines)  # Save contour image
 
     # Use morphological operations to extract thick horizontal lines.
     hor_kernel_len = max(3, image.shape[1] // 40)
@@ -52,7 +52,7 @@ def find_plot_corners(image, debug=False, output_folder="output"):
     extend_hor_kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (image.shape[1] // 5, 1))
     horizontal_lines = cv2.morphologyEx(horizontal_lines, cv2.MORPH_CLOSE, extend_hor_kernel, iterations=2)
     if debug:
-        cv2.imwrite(os.path.join(output_folder, "horizontal_lines.png"), horizontal_lines)  # Save contour image
+        cv2.imwrite(os.path.join(output_folder, "horizontal-lines.png"), horizontal_lines)  # Save contour image
     
     # Find intersections between the vertical and horizontal thick lines.
     intersections = cv2.bitwise_and(vertical_lines, horizontal_lines)
@@ -77,7 +77,7 @@ def find_plot_corners(image, debug=False, output_folder="output"):
     if debug:
         contour_image = np.zeros_like(gray)  # Same size as the original image, filled with black (0)
         cv2.drawContours(contour_image, contours, -1, (255), 2)  # (-1) draws all contours
-        cv2.imwrite(os.path.join(output_folder, "corner_contours.png"), contour_image)  # Save contour image
+        cv2.imwrite(os.path.join(output_folder, "corner-contours.png"), contour_image)  # Save contour image
 
     
     # Compute candidate points (use the center of each contour's bounding rectangle)
@@ -116,7 +116,7 @@ def find_plot_corners(image, debug=False, output_folder="output"):
         for pt in candidate_points:
             cv2.circle(debug_img, pt, 8, (255, 0, 255), -1)
 
-        cv2.imwrite(os.path.join("output", "corners.png"), debug_img)  # Save contour image
+        cv2.imwrite(os.path.join(output_folder, "corners.png"), debug_img)  # Save contour image
 
 
     
