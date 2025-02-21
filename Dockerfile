@@ -43,5 +43,5 @@ WORKDIR /app/src
 EXPOSE 5001
 
 # Set the entry point for the container
-CMD ["python", "extractor-app.py"]
+CMD ["python", "extractor_app.py"]
 # CMD ["bash"]

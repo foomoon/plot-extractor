@@ -40,8 +40,12 @@ def extract():
     title = request.form.get("title", "Example Figure")
     x_label = request.form.get("x_label", "X Axis")
     y_label = request.form.get("y_label", "Y Axis")
-
+    isMedian = request.form.get("isMedian", False)
     debug = request.form.get("debug", False)
+
+    # If images is None, then the file was not a valid image
+    if image is None:
+        return jsonify({'error': 'Invalid image file'}), 400
 
     # Check the checkbox: if it is unchecked, then get axis limits;
     # note: when a checkbox is checked its value is submitted.
@@ -77,7 +81,8 @@ def extract():
         "y_lim": y_lim,
         "title": title,
         "x_label": x_label,
-        "y_label": y_label
+        "y_label": y_label,
+        "isMedian": isMedian
     }
 
     # Convert the dictionary to an object with attributes
