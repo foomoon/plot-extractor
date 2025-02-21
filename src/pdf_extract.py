@@ -5,7 +5,6 @@ import fitz  # PyMuPDF
 
 def extract(pdf_path, output_folder ="pdf"):
   
-  # pdf_path = os.path.expanduser("~/Downloads/US8612008.pdf")
   doc = fitz.open(pdf_path)
 
   
