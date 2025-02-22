@@ -17,6 +17,8 @@ def extract(pdf_path, output_folder ="pdf", max_file_length=100):
 
   os.makedirs(output_folder, exist_ok=True)
 
+  images_saved = []
+
   for page_number in range(len(doc)):
       page = doc[page_number]
       image_list = page.get_images(full=True)
@@ -48,7 +50,9 @@ def extract(pdf_path, output_folder ="pdf", max_file_length=100):
           # Check if image is CMYK; if so, convert to RGB
           if pix.n >= 5:
               pix = fitz.Pixmap(fitz.csRGB, pix)
-          output_path = f"{output_folder}/{page_number+1}_{img_index}_{figure_caption}.png"
+          name = f"{page_number+1}_{img_index}_{figure_caption}.png"
+          images_saved.append(name)
+          output_path = f"{output_folder}/{name}"
           pix.save(output_path)
           pix = None
           print(f"[Saved] {output_path}")
@@ -56,7 +60,8 @@ def extract(pdf_path, output_folder ="pdf", max_file_length=100):
 
   print("\n-----------------------------------------")
   print(f"Total images saved: {total_images_saved}")
-  print(f"Output path: {output_path}\n")
+  print(f"Output path: {output_folder}\n")
+  return {"total_images_saved": total_images_saved, "output_path": output_folder, "images_saved": images_saved}
 
 def get_closest_text_block(text_blocks, image_rect):
     """Get the text block closest to the image."""

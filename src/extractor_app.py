@@ -1,8 +1,10 @@
+import os
 from flask import Flask, request, jsonify, render_template, url_for
 import cv2
 import numpy as np
 from run import main as run
 from types import SimpleNamespace
+from pdf_extract import extract as extract_images_from_pdf
 
 
 
@@ -16,6 +18,33 @@ def index():
 @app.route('/v2')
 def index2():
     return render_template("v2.html")
+
+@app.route('/pdf')
+def pdf():
+    return render_template("pdf.html")
+
+@app.route('/extractpdf', methods=['POST'])
+def extractpdf():
+    if 'file' not in request.files:
+        return jsonify({'error': 'No file part'}), 400
+    
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({'error': 'No selected file'}), 400
+    
+    #save the file
+    output_folder = "static/images/pdf"
+    os.makedirs(output_folder, exist_ok=True)
+    file_path = f"{output_folder}/{file.filename}"
+    file.save(file_path)
+    
+    result = extract_images_from_pdf(file_path, output_folder, 100)
+
+    # zip the images and save the zip file to the output folder
+    zip_path = f"{output_folder}/images.zip"
+    os.system(f"zip -r {zip_path} {output_folder}")
+    return jsonify(result)
+    # return jsonify({'message': 'PDF images extracted successfully'})
 
 @app.route('/extract', methods=['POST'])
 def extract():

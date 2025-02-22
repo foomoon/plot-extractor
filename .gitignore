@@ -32,5 +32,6 @@ output/
 *.png
 *.jpg
 *.jpeg
+*.zip
 
 .DS_Store
