@@ -5,6 +5,7 @@ import numpy as np
 from run import main as run
 from types import SimpleNamespace
 from pdf_extract import extract as extract_images_from_pdf
+from pdf_extract import save_images_to_pdf
 
 
 
@@ -35,14 +36,30 @@ def extractpdf():
     #save the file
     output_folder = "static/images/pdf"
     os.makedirs(output_folder, exist_ok=True)
+    # empty the folder (BE CAREFUL!!!)
+    os.system(f"rm -rf {output_folder}/*")
     file_path = f"{output_folder}/{file.filename}"
     file.save(file_path)
     
+    print(f"Extracting images from {file_path} to {output_folder}")
     result = extract_images_from_pdf(file_path, output_folder, 100)
 
+    # remove original pdf
+    print(f"Cleaning up: Removing original PDF")
+    os.system(f"rm -rf {file_path}")
+
+    print(f"Saving images to PDF")
+    save_images_to_pdf(result['images_saved'], output_folder)
+
     # zip the images and save the zip file to the output folder
+    print(f"Zipping images to {output_folder}")
     zip_path = f"{output_folder}/images.zip"
     os.system(f"zip -r {zip_path} {output_folder}")
+
+    # remove all of the images
+    print(f"Cleaning up: Removing images")
+    os.system(f"rm -rf {output_folder}/*.png")
+
     return jsonify(result)
     # return jsonify({'message': 'PDF images extracted successfully'})
 

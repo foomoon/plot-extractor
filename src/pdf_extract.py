@@ -6,6 +6,25 @@ import re
 def remove_repeated_underscores(s):
     return re.sub(r'_{2,}', '_', s)
 
+def save_images_to_pdf(images, output_folder):
+    # Create a PDF from the extracted images
+    pdf_path = f"{output_folder}/extracted_images.pdf"
+    pdf = fitz.open()
+    for image_path in images:
+        # Create a new page with A4 dimensions (595 x 842 points)
+        page = pdf.new_page(width=595, height=842)
+        # Define a rectangle where the image will be placed
+        # For instance, place the image at (50, 50) with a width and height of 200 points.
+        image_rect = fitz.Rect(50, 50, 500, 500)
+        # Insert the image into the page.
+        page.insert_image(image_rect, filename=f"{output_folder}/{image_path}")
+        # Add a caption below the image
+        caption = " ".join(image_path.split("_")).replace(".png", "")
+        # caption = image_path.split("_").join(" ").replace(".png","") #.split("_")[-1].replace(".png", "").replace("_", " ")
+        page.insert_text((50, 550), caption, fontsize=10, color=(0, 0, 0))
+    
+    pdf.save(pdf_path)
+
 
 def extract(pdf_path, output_folder ="pdf", max_file_length=100):
   
@@ -61,6 +80,7 @@ def extract(pdf_path, output_folder ="pdf", max_file_length=100):
   print("\n-----------------------------------------")
   print(f"Total images saved: {total_images_saved}")
   print(f"Output path: {output_folder}\n")
+  
   return {"total_images_saved": total_images_saved, "output_path": output_folder, "images_saved": images_saved}
 
 def get_closest_text_block(text_blocks, image_rect):

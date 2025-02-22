@@ -45,7 +45,12 @@
       <!-- Container for displaying the results -->
       <div id="result-container" class="result-container">
         <h2>Extraction Results:</h2>
-        <a href="/static/images/pdf/images.zip" id="download-link" class="btn btn-primary btn-sm" >Download Extracted Image</a>
+        <div class="mb-3">
+          <a href="/static/images/pdf/images.zip" id="download-link" class="btn btn-primary btn-sm" >Download Extracted Image</a>
+        </div>
+        <div class="mb-3">
+          <a href="/static/images/pdf/extracted_images.pdf" id="download-link" class="btn btn-primary btn-sm" >Download Extracted PDF</a>
+        </div>
         <pre id="result-text" class="collapsed"></pre>
         <button id="toggle-button" class="btn btn-secondary btn-sm" style="display:none;">Show More</button>
       </div>
