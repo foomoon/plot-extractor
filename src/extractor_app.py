@@ -40,7 +40,7 @@ def extract():
     title = request.form.get("title", "Example Figure")
     x_label = request.form.get("x_label", "X Axis")
     y_label = request.form.get("y_label", "Y Axis")
-    isMedian = request.form.get("isMedian", False)
+    isMedian = request.form.get("isMedian", True)
     debug = request.form.get("debug", False)
 
     # If images is None, then the file was not a valid image
@@ -49,7 +49,7 @@ def extract():
 
     # Check the checkbox: if it is unchecked, then get axis limits;
     # note: when a checkbox is checked its value is submitted.
-    detect_axes = request.form.get('detect_axes')
+    detect_axes = request.form.get('detect_axes', True)
     # If detect_axes is None, then it was unchecked (user wants manual limits)
     if detect_axes is None:
         try:
