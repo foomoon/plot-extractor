@@ -1,0 +1,163 @@
+openapi: 3.0.1
+info:
+  title: Extractor App API
+  version: 1.0.0
+  description: >
+    The Extractor App API provides endpoints for extracting images from a PDF
+    and processing images to extract plot data. The endpoints include:
+    - A home page endpoint returning HTML.
+    - A PDF extraction page.
+    - A POST /extractpdf endpoint to extract images from an uploaded PDF.
+    - A POST /extract endpoint to process an uploaded image and extract plot data.
+servers:
+  - url: http://localhost:5001
+paths:
+  /:
+    get:
+      summary: Home Page
+      description: Returns the main homepage HTML.
+      responses:
+        "200":
+          description: A HTML document.
+  /pdf:
+    get:
+      summary: PDF Extraction Page
+      description: Returns the PDF extraction interface as HTML.
+      responses:
+        "200":
+          description: A HTML document.
+  /extractpdf:
+    post:
+      summary: Extract Images from PDF
+      description: >
+        Accepts a PDF file upload and extracts images from the PDF using PyMuPDF.
+        The extracted images are saved with captions generated from nearby text.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: The PDF file to be uploaded.
+      responses:
+        "200":
+          description: PDF image extraction results.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total_images_saved:
+                    type: integer
+                  output_path:
+                    type: string
+                  images_saved:
+                    type: array
+                    items:
+                      type: string
+        "400":
+          description: Error message indicating missing or invalid file.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+  /extract:
+    post:
+      summary: Extract Plot Data from Image
+      description: >
+        Accepts an image file upload along with processing parameters and returns
+        extracted plot data points and statistical measures such as median RCS.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: The image file to process.
+                target_color:
+                  type: string
+                  description: The target color in hex (e.g., "#034730").
+                delta:
+                  type: integer
+                kernel_size:
+                  type: integer
+                thin:
+                  type: integer
+                dpi:
+                  type: integer
+                classification:
+                  type: string
+                title:
+                  type: string
+                x_label:
+                  type: string
+                y_label:
+                  type: string
+                isMedian:
+                  type: boolean
+                debug:
+                  type: boolean
+                detect_axes:
+                  type: string
+                x_min:
+                  type: number
+                x_max:
+                  type: number
+                y_min:
+                  type: number
+                y_max:
+                  type: number
+      responses:
+        "200":
+          description: Plot data extraction results with plot data and statistics.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data_points:
+                    type: array
+                    minItems: 2
+                    items:
+                      type: number
+                  median_rcs:
+                    type: number
+                  origin:
+                    type: array
+                    minItems: 2
+                    maxItems: 2
+                    items:
+                      type: number
+                  xlim:
+                    type: array
+                    minItems: 2
+                    maxItems: 2
+                    items:
+                      type: number
+                  ylim:
+                    type: array
+                    minItems: 2
+                    maxItems: 2
+                    items: 
+                      type: number
+                    
+        "400":
+          description: Error message indicating missing file or processing error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
