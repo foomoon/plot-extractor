@@ -33,5 +33,6 @@ output/
 *.jpg
 *.jpeg
 *.zip
+*.pdf
 
 .DS_Store
